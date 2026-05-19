@@ -97,6 +97,140 @@
     font-weight: 600;
   }
 
+  .favorite-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: -10px 0 20px;
+  }
+
+  .favorite-list-btn {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .favorite-list-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  #favorite-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    margin-left: 4px;
+    border-radius: 999px;
+    background: rgba(255,107,107,0.18);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .favorite-panel {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .favorite-panel.show { display: block; }
+
+  .favorite-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--accent2);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .favorite-clear-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .favorite-clear-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .favorite-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .favorite-empty {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 12px 0;
+  }
+
+  .favorite-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .favorite-item-main {
+    min-width: 0;
+  }
+
+  .favorite-item-char {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .favorite-item-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .favorite-item-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .favorite-remove-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .favorite-remove-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .section-title {
     font-size: 11px;
     text-transform: uppercase;
@@ -117,7 +251,7 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 12px 6px;
+    padding: 18px 6px 12px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -139,6 +273,38 @@
 
   .char-card.flipped::before { opacity: 0.12; }
   .char-card.flipped { border-color: var(--accent); }
+
+  .favorite-btn {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(15,14,23,0.62);
+    color: var(--muted);
+    cursor: pointer;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s;
+  }
+
+  .favorite-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(255,107,107,0.12);
+  }
+
+  .favorite-btn.active {
+    border-color: rgba(255,107,107,0.65);
+    background: rgba(255,107,107,0.18);
+    color: var(--accent);
+  }
 
   .korean-char {
     font-family: 'Noto Serif KR', serif;
@@ -367,6 +533,15 @@
   .flashcard-wrap {
     perspective: 1000px;
     margin-bottom: 20px;
+    position: relative;
+  }
+
+  .favorite-btn-large {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
   }
 
   .flashcard {

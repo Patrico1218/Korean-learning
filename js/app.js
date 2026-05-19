@@ -42,17 +42,151 @@ const data = {
 
 const allChars = [...data.vowels, ...data.plain, ...data.asp, ...data.hard];
 const labelMap = { vowel:'母音', plain:'平音', asp:'激音', hard:'硬音' };
+const favoriteStorageKey = 'korean-learning-favorites';
+let favorites = loadFavorites();
+
+function loadFavorites() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || '[]');
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem(favoriteStorageKey, JSON.stringify(favorites));
+  } catch (error) {
+    // Ignore storage failures so the practice page still works.
+  }
+}
+
+function alphaFavoriteItem(item) {
+  return {
+    id: `alpha-${item.type}-${item.char}`,
+    char: item.char,
+    title: item.reading,
+    sub: `${labelMap[item.type]} · ${item.example}`,
+  };
+}
+
+function nounFavoriteItem(item) {
+  return {
+    id: `noun-${item.cat}-${item.front}`,
+    char: item.front,
+    title: item.meaning,
+    sub: `${item.cat} · ${item.romanize}`,
+  };
+}
+
+function favoriteFromFlashItem(item) {
+  return item.romanize ? nounFavoriteItem(item) : alphaFavoriteItem(item);
+}
+
+function isFavorite(id) {
+  return favorites.some(item => item.id === id);
+}
+
+function toggleFavorite(item) {
+  const exists = isFavorite(item.id);
+  favorites = exists ? favorites.filter(saved => saved.id !== item.id) : [item, ...favorites];
+  saveFavorites();
+  renderFavorites();
+  syncFavoriteButtons();
+}
+
+function removeFavorite(id) {
+  favorites = favorites.filter(item => item.id !== id);
+  saveFavorites();
+  renderFavorites();
+  syncFavoriteButtons();
+}
+
+function clearFavorites() {
+  favorites = [];
+  saveFavorites();
+  renderFavorites();
+  syncFavoriteButtons();
+}
+
+function toggleFavoriteList() {
+  document.getElementById('favorite-panel').classList.toggle('show');
+}
+
+function syncFavoriteButtons() {
+  document.querySelectorAll('.favorite-btn[data-favorite-id]').forEach(btn => {
+    const active = isFavorite(btn.dataset.favoriteId);
+    btn.classList.toggle('active', active);
+    btn.textContent = active ? '♥' : '♡';
+    btn.setAttribute('aria-label', active ? '移除收藏' : '加入收藏');
+  });
+}
+
+function renderFavorites() {
+  const count = document.getElementById('favorite-count');
+  const list = document.getElementById('favorite-list');
+  if (!count || !list) return;
+
+  count.textContent = favorites.length;
+  list.innerHTML = '';
+
+  if (favorites.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'favorite-empty';
+    empty.textContent = '還沒有收藏，點字卡右上角的愛心加入。';
+    list.appendChild(empty);
+    return;
+  }
+
+  favorites.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'favorite-item';
+
+    const char = document.createElement('div');
+    char.className = 'favorite-item-char';
+    char.textContent = item.char;
+
+    const main = document.createElement('div');
+    main.className = 'favorite-item-main';
+
+    const title = document.createElement('div');
+    title.className = 'favorite-item-title';
+    title.textContent = item.title;
+
+    const sub = document.createElement('div');
+    sub.className = 'favorite-item-sub';
+    sub.textContent = item.sub;
+
+    const remove = document.createElement('button');
+    remove.className = 'favorite-remove-btn';
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', `移除 ${item.char}`);
+    remove.onclick = () => removeFavorite(item.id);
+
+    main.append(title, sub);
+    row.append(char, main, remove);
+    list.appendChild(row);
+  });
+}
 
 function buildGrid(arr, gridId) {
   const grid = document.getElementById(gridId);
   arr.forEach(item => {
+    const favoriteItem = alphaFavoriteItem(item);
     const card = document.createElement('div');
     card.className = 'char-card';
     card.innerHTML = `
+      <button class="favorite-btn" type="button" data-favorite-id="${favoriteItem.id}" aria-label="加入收藏">♡</button>
       <span class="korean-char">${item.char}</span>
       <div class="char-hint">${item.hint || '點擊看發音'}</div>
       <div class="reveal">${item.reading}</div>
     `;
+    card.querySelector('.favorite-btn').onclick = event => {
+      event.stopPropagation();
+      toggleFavorite(favoriteItem);
+    };
     card.onclick = () => card.classList.toggle('flipped');
     grid.appendChild(card);
   });
@@ -213,10 +347,23 @@ function updateFlashcard() {
         <span class="example">${item.example}</span>
       `;
     }
+    updateFlashFavoriteButton();
   }, 150);
 }
 
 function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function updateFlashFavoriteButton() {
+  const btn = document.getElementById('fc-favorite-btn');
+  const item = favoriteFromFlashItem(fcList[fcIndex]);
+  btn.dataset.favoriteId = item.id;
+  syncFavoriteButtons();
+}
+
+function toggleCurrentFlashFavorite(event) {
+  event.stopPropagation();
+  toggleFavorite(favoriteFromFlashItem(fcList[fcIndex]));
+}
+
 function fcNext() { fcIndex = (fcIndex + 1) % fcList.length; updateFlashcard(); }
 function fcPrev() { fcIndex = (fcIndex - 1 + fcList.length) % fcList.length; updateFlashcard(); }
 function fcShuffle() {
@@ -226,6 +373,8 @@ function fcShuffle() {
 }
 
 updateFlashcard();
+renderFavorites();
+syncFavoriteButtons();
 
 let quizScore = 0;
 let quizTotal = 0;

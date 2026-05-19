@@ -21,6 +21,20 @@
     <button class="tab" onclick="switchTab('quiz')">🎯 測驗挑戰</button>
   </div>
 
+  <div class="favorite-toolbar">
+    <button class="favorite-list-btn" onclick="toggleFavoriteList()">
+      ♡ 收藏清單 <span id="favorite-count">0</span>
+    </button>
+  </div>
+
+  <div class="favorite-panel" id="favorite-panel" aria-live="polite">
+    <div class="favorite-panel-head">
+      <span>已收藏字詞</span>
+      <button class="favorite-clear-btn" onclick="clearFavorites()">清空</button>
+    </div>
+    <div class="favorite-list" id="favorite-list"></div>
+  </div>
+
   <div class="panel active" id="panel-browse">
     <div class="section-title">母音 Vowels</div>
     <div class="char-grid" id="vowel-grid"></div>
@@ -48,6 +62,7 @@
       <button class="fc-deck-btn" onclick="setFcDeck('time', this)">🕐 時間</button>
     </div>
     <div class="flashcard-wrap">
+      <button class="favorite-btn favorite-btn-large" id="fc-favorite-btn" onclick="toggleCurrentFlashFavorite(event)" aria-label="加入收藏">♡</button>
       <div class="flashcard" id="flashcard" onclick="flipCard()">
         <div class="card-front">
           <span class="big-char" id="fc-char">ㅏ</span>
