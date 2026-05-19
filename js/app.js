@@ -274,7 +274,7 @@ function buildGrid(arr, gridId) {
     const card = document.createElement('div');
     card.className = 'char-card';
     card.innerHTML = `
-      <button class="speak-btn" type="button" aria-label="播放發音">🔊</button>
+      <button class="speak-btn" type="button" aria-label="播放發音">▶</button>
       <button class="favorite-btn" type="button" data-favorite-id="${favoriteItem.id}" aria-label="加入收藏">♡</button>
       <span class="korean-char">${item.char}</span>
       <div class="char-hint">${item.hint || '點擊看發音'}</div>

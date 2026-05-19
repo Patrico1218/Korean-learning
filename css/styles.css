@@ -272,7 +272,8 @@
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 18px 6px 12px;
+    padding: 48px 8px 14px;
+    min-height: 116px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -343,6 +344,8 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 600;
     line-height: 1;
     transition: all 0.2s;
   }
@@ -355,7 +358,7 @@
 
   .korean-char {
     font-family: 'Noto Serif KR', serif;
-    font-size: 28px;
+    font-size: 32px;
     display: block;
     position: relative;
     z-index: 1;
@@ -365,7 +368,7 @@
   .char-hint {
     font-size: 11px;
     color: var(--muted);
-    margin-top: 4px;
+    margin-top: 6px;
     position: relative;
     z-index: 1;
     transition: all 0.2s;
@@ -613,7 +616,7 @@
     left: 12px;
     width: 36px;
     height: 36px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .flashcard {
@@ -789,3 +792,29 @@
   .badge-plain { background: rgba(255,217,61,0.2); color: var(--accent2); }
   .badge-asp { background: rgba(255,107,107,0.2); color: var(--accent); }
   .badge-hard { background: rgba(160,130,255,0.2); color: #b39ddb; }
+
+  @media (max-width: 640px) {
+    .container {
+      padding: 20px 14px 52px;
+    }
+
+    .char-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .char-card {
+      min-height: 132px;
+      padding-top: 52px;
+    }
+
+    .korean-char {
+      font-size: 34px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .char-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
