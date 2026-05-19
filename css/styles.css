@@ -23,10 +23,7 @@
   body::before {
     content: '';
     position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    inset: 0;
     background: radial-gradient(ellipse at 20% 20%, rgba(255,107,107,0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 80%, rgba(107,203,119,0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 50%, rgba(255,217,61,0.03) 0%, transparent 60%);
@@ -537,6 +534,8 @@
 
   .quiz-btn:disabled { cursor: default; }
 
+  .quiz-btn--vocab { font-size: 13px; line-height: 1.4; }
+
   .score-bar {
     display: flex;
     align-items: center;
@@ -745,15 +744,6 @@
     margin-bottom: 8px;
   }
 
-  .card-back .noun-cat {
-    font-size: 10px;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-top: 4px;
-  }
-
   .panel { display: none; }
   .panel.active { display: block; }
 
@@ -777,21 +767,6 @@
     font-weight: 600;
     cursor: pointer;
   }
-
-  .type-badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    margin-bottom: 4px;
-    font-weight: 600;
-    letter-spacing: 1px;
-  }
-
-  .badge-vowel { background: rgba(107,203,119,0.2); color: var(--accent3); }
-  .badge-plain { background: rgba(255,217,61,0.2); color: var(--accent2); }
-  .badge-asp { background: rgba(255,107,107,0.2); color: var(--accent); }
-  .badge-hard { background: rgba(160,130,255,0.2); color: #b39ddb; }
 
   @media (max-width: 640px) {
     .container {

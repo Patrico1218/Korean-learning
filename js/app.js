@@ -46,6 +46,7 @@ const favoriteStorageKey = 'korean-learning-favorites';
 let koreanVoices = [];
 let speechStatusTimer = null;
 let speechWarmupDone = false;
+const QUIZ_COUNT = 15;
 let favorites = loadFavorites();
 
 function getKoreanExampleText(item) {
@@ -135,7 +136,8 @@ if ('speechSynthesis' in window) {
 function loadFavorites() {
   try {
     const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || '[]');
-    return Array.isArray(saved) ? saved : [];
+    if (!Array.isArray(saved)) return [];
+    return saved.filter(item => item && typeof item.id === 'string' && typeof item.char === 'string');
   } catch (error) {
     return [];
   }
@@ -425,8 +427,10 @@ function setFcDeck(deckKey, button) {
 function updateFlashcard() {
   const card = document.getElementById('flashcard');
   card.classList.remove('flipped');
+  const capturedIndex = fcIndex;
   setTimeout(() => {
-    const item = fcList[fcIndex];
+    const item = fcList[capturedIndex];
+    if (!item) return;
     const isNoun = !!item.romanize;
 
     document.getElementById('fc-char').textContent = item.front || item.char;
@@ -566,7 +570,7 @@ function setQuizMode(mode) {
 function startQuiz() {
   quizScore = 0;
   quizTotal = 0;
-  quizQueue = quizMode === 'alpha' ? shuffle(allChars).slice(0, 15) : shuffle(travelVocab).slice(0, 15);
+  quizQueue = quizMode === 'alpha' ? shuffle(allChars).slice(0, QUIZ_COUNT) : shuffle(travelVocab).slice(0, QUIZ_COUNT);
   document.getElementById('quiz-main').style.display = 'block';
   document.getElementById('quiz-result').style.display = 'none';
   document.getElementById('alpha-question').style.display = quizMode === 'alpha' ? 'block' : 'none';
@@ -615,8 +619,7 @@ function nextQuestion() {
       const btn = document.createElement('button');
       btn.className = 'quiz-btn';
       btn.textContent = opt;
-      btn.style.fontSize = '13px';
-      btn.style.lineHeight = '1.4';
+      btn.classList.add('quiz-btn--vocab');
       btn.onclick = () => checkVocabAnswer(btn, opt === currentQ.meaning);
       container.appendChild(btn);
     });
@@ -675,25 +678,25 @@ function checkVocabAnswer(btn, isCorrect) {
 
 function updateScoreDisplay() {
   document.getElementById('score-display').textContent = `${quizScore} / ${quizTotal}`;
-  const pct = quizTotal > 0 ? (quizTotal / 15) * 100 : 0;
+  const pct = quizTotal > 0 ? (quizTotal / QUIZ_COUNT) * 100 : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
 }
 
 function showResult() {
   document.getElementById('quiz-main').style.display = 'none';
   document.getElementById('quiz-result').style.display = 'block';
-  const pct = quizScore / 15;
+  const pct = quizScore / QUIZ_COUNT;
   let emoji, title, sub;
   if (quizMode === 'vocab') {
-    if (pct >= 0.9) { emoji='🛫'; title='準備出發！'; sub=`答對 ${quizScore}/15 題，韓國旅遊沒問題！`; }
-    else if (pct >= 0.7) { emoji='🗺️'; title='旅遊基礎紮實！'; sub=`答對 ${quizScore}/15 題，再多練幾次更有把握！`; }
-    else if (pct >= 0.5) { emoji='📖'; title='繼續加油！'; sub=`答對 ${quizScore}/15 題，建議先把常用句型背熟！`; }
-    else { emoji='💪'; title='不要放棄！'; sub=`答對 ${quizScore}/15 題，多看幾遍再挑戰！`; }
+    if (pct >= 0.9) { emoji='🛫'; title='準備出發！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，韓國旅遊沒問題！`; }
+    else if (pct >= 0.7) { emoji='🗺️'; title='旅遊基礎紮實！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，再多練幾次更有把握！`; }
+    else if (pct >= 0.5) { emoji='📖'; title='繼續加油！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，建議先把常用句型背熟！`; }
+    else { emoji='💪'; title='不要放棄！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，多看幾遍再挑戰！`; }
   } else {
-    if (pct >= 0.9) { emoji='🏆'; title='超級厲害！'; sub=`答對 ${quizScore}/15 題，諺文天才！`; }
-    else if (pct >= 0.7) { emoji='🎉'; title='很不錯！'; sub=`答對 ${quizScore}/15 題，繼續練習會更好！`; }
-    else if (pct >= 0.5) { emoji='💪'; title='加油！'; sub=`答對 ${quizScore}/15 題，多翻幾次牌就會記住！`; }
-    else { emoji='📚'; title='繼續練習！'; sub=`答對 ${quizScore}/15 題，先去翻牌模式熟悉一下吧！`; }
+    if (pct >= 0.9) { emoji='🏆'; title='超級厲害！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，諺文天才！`; }
+    else if (pct >= 0.7) { emoji='🎉'; title='很不錯！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，繼續練習會更好！`; }
+    else if (pct >= 0.5) { emoji='💪'; title='加油！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，多翻幾次牌就會記住！`; }
+    else { emoji='📚'; title='繼續練習！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，先去翻牌模式熟悉一下吧！`; }
   }
   document.getElementById('result-emoji').textContent = emoji;
   document.getElementById('result-title').textContent = title;
@@ -701,8 +704,8 @@ function showResult() {
 }
 
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', ['browse','flash','quiz'][i] === name);
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === name);
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
