@@ -301,6 +301,33 @@ buildGrid(data.asp, 'asp-grid');
 buildGrid(data.hard, 'hard-grid');
 
 const nounDecks = {
+  number: [
+    { front:'일', romanize:'il', meaning:'一', cat:'數字' },
+    { front:'이', romanize:'i', meaning:'二', cat:'數字' },
+    { front:'삼', romanize:'sam', meaning:'三', cat:'數字' },
+    { front:'사', romanize:'sa', meaning:'四', cat:'數字' },
+    { front:'오', romanize:'o', meaning:'五', cat:'數字' },
+    { front:'육', romanize:'yuk', meaning:'六', cat:'數字' },
+    { front:'칠', romanize:'chil', meaning:'七', cat:'數字' },
+    { front:'팔', romanize:'pal', meaning:'八', cat:'數字' },
+    { front:'구', romanize:'gu', meaning:'九', cat:'數字' },
+    { front:'십', romanize:'sip', meaning:'十', cat:'數字' },
+    { front:'백', romanize:'baek', meaning:'百', cat:'數字' },
+    { front:'천', romanize:'cheon', meaning:'千', cat:'數字' },
+    { front:'만', romanize:'man', meaning:'萬', cat:'數字' },
+  ],
+  money: [
+    { front:'백 원', romanize:'baek won', meaning:'100 韓元', cat:'金額' },
+    { front:'이백 원', romanize:'i-baek won', meaning:'200 韓元', cat:'金額' },
+    { front:'삼백 원', romanize:'sam-baek won', meaning:'300 韓元', cat:'金額' },
+    { front:'오백 원', romanize:'o-baek won', meaning:'500 韓元', cat:'金額' },
+    { front:'천 원', romanize:'cheon won', meaning:'1,000 韓元', cat:'金額' },
+    { front:'이천 원', romanize:'i-cheon won', meaning:'2,000 韓元', cat:'金額' },
+    { front:'오천 원', romanize:'o-cheon won', meaning:'5,000 韓元', cat:'金額' },
+    { front:'만 원', romanize:'man won', meaning:'10,000 韓元', cat:'金額' },
+    { front:'이만 원', romanize:'i-man won', meaning:'20,000 韓元', cat:'金額' },
+    { front:'오만 원', romanize:'o-man won', meaning:'50,000 韓元', cat:'金額' },
+  ],
   food: [
     { front:'밥', romanize:'bap', meaning:'米飯', cat:'飲食' },
     { front:'라면', romanize:'ra-myeon', meaning:'泡麵', cat:'飲食' },
@@ -400,7 +427,78 @@ const nounDecks = {
 const catColorMap = {
   '飲食':'cat-food', '場所':'cat-greet', '交通':'cat-transport',
   '購物':'cat-shop', '身體':'cat-body', '時間':'cat-hotel',
+  '數字':'cat-number', '金額':'cat-money',
 };
+
+const dailyPhrases = [
+  { korean:'얼마예요?', romanize:'eol-ma-ye-yo', meaning:'多少錢？', note:'買東西第一句' },
+  { korean:'이거 주세요', romanize:'i-geo ju-se-yo', meaning:'請給我這個', note:'指著商品時很好用' },
+  { korean:'두 개 주세요', romanize:'du gae ju-se-yo', meaning:'請給我兩個', note:'개 是「個」的量詞' },
+  { korean:'카드 돼요?', romanize:'ka-deu dwae-yo', meaning:'可以刷卡嗎？', note:'也可問 현금 돼요? 可以付現嗎' },
+  { korean:'영수증 주세요', romanize:'yeong-su-jeung ju-se-yo', meaning:'請給我收據', note:'結帳後可直接說' },
+  { korean:'봉투 주세요', romanize:'bong-tu ju-se-yo', meaning:'請給我袋子', note:'便利商店常用' },
+  { korean:'깎아 주세요', romanize:'kka-kka ju-se-yo', meaning:'請便宜一點', note:'市場或路邊攤較常用' },
+  { korean:'비싸요', romanize:'bi-ssa-yo', meaning:'很貴', note:'싸요 是便宜' },
+];
+
+function makeSpeakButton(text) {
+  const button = document.createElement('button');
+  button.className = 'speak-btn';
+  button.type = 'button';
+  button.textContent = '▶';
+  button.setAttribute('aria-label', `播放 ${text}`);
+  button.onclick = event => {
+    event.stopPropagation();
+    speakKorean(text);
+  };
+  return button;
+}
+
+function renderDailyLearning() {
+  const numberGrid = document.getElementById('number-grid');
+  const amountTable = document.getElementById('amount-table');
+  const phraseList = document.getElementById('phrase-list');
+  if (!numberGrid || !amountTable || !phraseList) return;
+
+  nounDecks.number.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'daily-card';
+    card.appendChild(makeSpeakButton(item.front));
+    card.insertAdjacentHTML('beforeend', `
+      <span class="daily-korean">${item.front}</span>
+      <div class="daily-romanize">${item.romanize}</div>
+      <div class="daily-meaning">${item.meaning}</div>
+    `);
+    numberGrid.appendChild(card);
+  });
+
+  nounDecks.money.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'amount-row';
+    row.appendChild(makeSpeakButton(item.front));
+    row.insertAdjacentHTML('beforeend', `
+      <div class="amount-value">${item.meaning.replace(' 韓元', '원')}</div>
+      <div>
+        <div class="amount-korean">${item.front}</div>
+        <div class="daily-romanize">${item.romanize}</div>
+      </div>
+      <div class="amount-note">${item.meaning}</div>
+    `);
+    amountTable.appendChild(row);
+  });
+
+  dailyPhrases.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'phrase-card';
+    card.appendChild(makeSpeakButton(item.korean));
+    card.insertAdjacentHTML('beforeend', `
+      <span class="phrase-korean">${item.korean}</span>
+      <div class="phrase-meta">${item.romanize} · ${item.note}</div>
+      <div class="phrase-meaning">${item.meaning}</div>
+    `);
+    phraseList.appendChild(card);
+  });
+}
 
 let fcIndex = 0;
 let fcList = [...allChars];
@@ -516,6 +614,7 @@ function fcShuffle() {
 }
 
 updateFlashcard();
+renderDailyLearning();
 renderFavorites();
 syncFavoriteButtons();
 
@@ -544,6 +643,13 @@ const travelVocab = [
   { korean:'입어 봐도 돼요？', romanize:'i-beo bwa-do dwae-yo', meaning:'可以試穿嗎？', wrong:['有其他顏色嗎', '打折嗎', '收信用卡嗎'], cat:'shop', catLabel:'購物' },
   { korean:'카드 돼요？', romanize:'ka-deu dwae-yo', meaning:'可以刷卡嗎？', wrong:['可以打折嗎', '可以試穿嗎', '有大一點嗎'], cat:'shop', catLabel:'購物' },
   { korean:'영수증 주세요', romanize:'yeong-su-jeung ju-se-yo', meaning:'請給我收據', wrong:['結帳', '打包', '刷卡'], cat:'shop', catLabel:'購物' },
+  { korean:'백 원이에요', romanize:'baek won-i-e-yo', meaning:'是 100 韓元', wrong:['是 1,000 韓元', '請給我這個', '可以刷卡嗎？'], cat:'money', catLabel:'金額' },
+  { korean:'이백 원이에요', romanize:'i-baek won-i-e-yo', meaning:'是 200 韓元', wrong:['是 100 韓元', '是 2,000 韓元', '請給我收據'], cat:'money', catLabel:'金額' },
+  { korean:'천 원이에요', romanize:'cheon won-i-e-yo', meaning:'是 1,000 韓元', wrong:['是 100 韓元', '是 10,000 韓元', '很便宜'], cat:'money', catLabel:'金額' },
+  { korean:'만 원이에요', romanize:'man won-i-e-yo', meaning:'是 10,000 韓元', wrong:['是 1,000 韓元', '是 100 韓元', '很貴'], cat:'money', catLabel:'金額' },
+  { korean:'두 개 주세요', romanize:'du gae ju-se-yo', meaning:'請給我兩個', wrong:['請給我一個', '多少錢？', '請給我袋子'], cat:'shop', catLabel:'購物' },
+  { korean:'봉투 주세요', romanize:'bong-tu ju-se-yo', meaning:'請給我袋子', wrong:['請給我收據', '請給我兩個', '可以刷卡嗎？'], cat:'shop', catLabel:'購物' },
+  { korean:'비싸요', romanize:'bi-ssa-yo', meaning:'很貴', wrong:['很便宜', '很好吃', '沒關係'], cat:'shop', catLabel:'購物' },
   { korean:'지하철역이 어디예요？', romanize:'ji-ha-cheol-yeog-i eo-di-ye-yo', meaning:'地鐵站在哪裡？', wrong:['公車站在哪', '計程車怎麼搭', '多少錢'], cat:'transport', catLabel:'交通' },
   { korean:'택시 불러 주세요', romanize:'taek-si bul-leo ju-se-yo', meaning:'請幫我叫計程車', wrong:['地鐵在哪', '怎麼走', '多遠'], cat:'transport', catLabel:'交通' },
   { korean:'여기서 내려 주세요', romanize:'yeo-gi-seo nae-ryeo ju-se-yo', meaning:'請在這裡讓我下車', wrong:['往左轉', '往右轉', '直走'], cat:'transport', catLabel:'交通' },
@@ -688,9 +794,9 @@ function showResult() {
   const pct = quizScore / QUIZ_COUNT;
   let emoji, title, sub;
   if (quizMode === 'vocab') {
-    if (pct >= 0.9) { emoji='🛫'; title='準備出發！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，韓國旅遊沒問題！`; }
-    else if (pct >= 0.7) { emoji='🗺️'; title='旅遊基礎紮實！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，再多練幾次更有把握！`; }
-    else if (pct >= 0.5) { emoji='📖'; title='繼續加油！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，建議先把常用句型背熟！`; }
+    if (pct >= 0.9) { emoji='🛫'; title='準備出發！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，日常購物和旅遊句型都很穩！`; }
+    else if (pct >= 0.7) { emoji='🗺️'; title='基礎紮實！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，再多練幾次更有把握！`; }
+    else if (pct >= 0.5) { emoji='📖'; title='繼續加油！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，建議先把數字和常用句背熟！`; }
     else { emoji='💪'; title='不要放棄！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，多看幾遍再挑戰！`; }
   } else {
     if (pct >= 0.9) { emoji='🏆'; title='超級厲害！'; sub=`答對 ${quizScore}/${QUIZ_COUNT} 題，諺文天才！`; }

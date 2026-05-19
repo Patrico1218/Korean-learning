@@ -20,6 +20,7 @@
 
   <div class="tabs">
     <button class="tab active" data-tab="browse" onclick="switchTab('browse')">📖 認識字母</button>
+    <button class="tab" data-tab="daily" onclick="switchTab('daily')">🧾 日常單字</button>
     <button class="tab" data-tab="flash" onclick="switchTab('flash')">🃏 翻牌記憶</button>
     <button class="tab" data-tab="quiz" onclick="switchTab('quiz')">🎯 測驗挑戰</button>
   </div>
@@ -53,11 +54,32 @@
     <div class="char-grid" id="hard-grid"></div>
   </div>
 
+  <div class="panel" id="panel-daily">
+    <div class="learning-intro">
+      <div>
+        <h2>日常購物與數字</h2>
+        <p>買東西時最常用的是漢字數字：一百、兩百、一千、多少錢，都可以在這裡先熟起來。</p>
+      </div>
+      <span class="intro-badge">원 = 韓元</span>
+    </div>
+
+    <div class="section-title">數字 Numbers</div>
+    <div class="daily-grid" id="number-grid"></div>
+
+    <div class="section-title">金額 Amounts</div>
+    <div class="amount-table" id="amount-table"></div>
+
+    <div class="section-title">購物常用句 Shopping Phrases</div>
+    <div class="phrase-list" id="phrase-list"></div>
+  </div>
+
   <div class="panel" id="panel-flash">
     <div class="fc-deck-tabs">
       <button class="fc-deck-btn active" onclick="setFcDeck('alpha', this)">🔤 全部字母</button>
       <button class="fc-deck-btn" onclick="setFcDeck('vowel', this)">母音</button>
       <button class="fc-deck-btn" onclick="setFcDeck('consonant', this)">子音</button>
+      <button class="fc-deck-btn" onclick="setFcDeck('number', this)">🔢 數字</button>
+      <button class="fc-deck-btn" onclick="setFcDeck('money', this)">💵 金額</button>
       <button class="fc-deck-btn" onclick="setFcDeck('food', this)">🍜 飲食</button>
       <button class="fc-deck-btn" onclick="setFcDeck('place', this)">📍 場所</button>
       <button class="fc-deck-btn" onclick="setFcDeck('transport', this)">🚇 交通</button>
@@ -91,7 +113,7 @@
   <div class="panel" id="panel-quiz">
     <div class="quiz-mode-tabs">
       <button class="qmode-btn active" id="qmode-alpha" onclick="setQuizMode('alpha')">🔤 字母發音</button>
-      <button class="qmode-btn" id="qmode-vocab" onclick="setQuizMode('vocab')">✈️ 旅遊單字</button>
+      <button class="qmode-btn" id="qmode-vocab" onclick="setQuizMode('vocab')">🧾 日常／旅遊單字</button>
     </div>
     <div id="quiz-main">
       <div class="score-bar">

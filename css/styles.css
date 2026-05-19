@@ -452,6 +452,144 @@
   .cat-hotel { background: rgba(200,150,255,0.2); color: #ce93d8; }
   .cat-emergency { background: rgba(255,150,100,0.2); color: #ffab76; }
   .cat-body { background: rgba(160,130,255,0.2); color: #b39ddb; }
+  .cat-number { background: rgba(78,205,196,0.2); color: #4ecdc4; }
+  .cat-money { background: rgba(255,217,61,0.2); color: var(--accent2); }
+  .cat-daily { background: rgba(107,203,119,0.2); color: var(--accent3); }
+
+  .learning-intro {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 18px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(255,107,107,0.12), rgba(78,205,196,0.08));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .learning-intro h2 {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .learning-intro p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .intro-badge {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,217,61,0.14);
+    color: var(--accent2);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .daily-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+
+  .daily-card,
+  .amount-row,
+  .phrase-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .daily-card {
+    min-height: 132px;
+    padding: 42px 10px 14px;
+    text-align: center;
+  }
+
+  .daily-korean {
+    display: block;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .daily-romanize {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+  }
+
+  .daily-meaning {
+    color: var(--accent2);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 7px;
+  }
+
+  .amount-table {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+
+  .amount-row {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px 12px 52px;
+  }
+
+  .amount-value {
+    color: var(--accent2);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .amount-korean {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+  }
+
+  .amount-note {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .phrase-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .phrase-card {
+    padding: 14px 14px 14px 52px;
+  }
+
+  .phrase-korean {
+    display: block;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  .phrase-meta {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .phrase-meaning {
+    color: var(--accent3);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
 
   .quiz-box {
     background: var(--card);
@@ -776,6 +914,37 @@
     .char-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
+    }
+
+    .tabs {
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      flex-basis: calc(50% - 4px);
+    }
+
+    .learning-intro {
+      display: block;
+    }
+
+    .intro-badge {
+      display: inline-flex;
+      margin-top: 12px;
+    }
+
+    .daily-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .amount-row {
+      grid-template-columns: 76px 1fr;
+      padding-right: 12px;
+    }
+
+    .amount-note {
+      grid-column: 1 / -1;
+      text-align: left;
     }
 
     .char-card {
