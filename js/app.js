@@ -43,6 +43,9 @@ const data = {
 const allChars = [...data.vowels, ...data.plain, ...data.asp, ...data.hard];
 const labelMap = { vowel:'母音', plain:'平音', asp:'激音', hard:'硬音' };
 const favoriteStorageKey = 'korean-learning-favorites';
+let koreanVoices = [];
+let speechStatusTimer = null;
+let speechWarmupDone = false;
 let favorites = loadFavorites();
 
 function getKoreanExampleText(item) {
@@ -58,22 +61,75 @@ function getQuizSpeakText() {
   return quizMode === 'vocab' ? currentQ.korean : getKoreanExampleText(currentQ);
 }
 
-function speakKorean(text) {
-  if (!text || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+function showSpeechStatus(message, isWarning = false) {
+  const status = document.getElementById('speech-status');
+  if (!status) return;
+
+  status.textContent = message;
+  status.classList.toggle('warn', isWarning);
+  status.classList.add('show');
+  clearTimeout(speechStatusTimer);
+  speechStatusTimer = setTimeout(() => {
+    status.classList.remove('show', 'warn');
+  }, 2600);
+}
+
+function refreshKoreanVoices() {
+  if (!('speechSynthesis' in window)) return [];
+
+  const voices = window.speechSynthesis.getVoices();
+  koreanVoices = voices.filter(voice => voice.lang && voice.lang.toLowerCase().startsWith('ko'));
+  return koreanVoices;
+}
+
+function getKoreanVoice() {
+  const voices = koreanVoices.length ? koreanVoices : refreshKoreanVoices();
+  return voices.find(voice => voice.lang === 'ko-KR') || voices[0] || null;
+}
+
+function warmupSpeechSynthesis() {
+  if (speechWarmupDone || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
     return;
   }
 
-  window.speechSynthesis.cancel();
+  speechWarmupDone = true;
+  refreshKoreanVoices();
+}
+
+function speakKorean(text) {
+  if (!text || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    showSpeechStatus('這個瀏覽器不支援朗讀功能', true);
+    return;
+  }
+
+  warmupSpeechSynthesis();
+  showSpeechStatus(`播放：${text}`);
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ko-KR';
   utterance.rate = 0.82;
+  utterance.pitch = 1;
+  utterance.volume = 1;
 
-  const voices = window.speechSynthesis.getVoices();
-  const koreanVoice = voices.find(voice => voice.lang === 'ko-KR') ||
-    voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith('ko'));
+  const koreanVoice = getKoreanVoice();
   if (koreanVoice) utterance.voice = koreanVoice;
 
-  window.speechSynthesis.speak(utterance);
+  utterance.onerror = () => {
+    showSpeechStatus('Safari 若沒有聲音，請改用 Chrome 或確認韓文語音已下載', true);
+  };
+
+  window.speechSynthesis.cancel();
+  setTimeout(() => {
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      showSpeechStatus('Safari 若沒有聲音，請改用 Chrome 或確認韓文語音已下載', true);
+    }
+  }, 90);
+}
+
+if ('speechSynthesis' in window) {
+  refreshKoreanVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', refreshKoreanVoices);
 }
 
 function loadFavorites() {

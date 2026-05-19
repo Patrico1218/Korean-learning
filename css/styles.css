@@ -134,6 +134,27 @@
     font-weight: 600;
   }
 
+  .speech-status {
+    min-height: 0;
+    color: var(--accent2);
+    font-size: 12px;
+    text-align: right;
+    margin: -12px 2px 18px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .speech-status.show {
+    min-height: 18px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .speech-status.warn {
+    color: var(--accent);
+  }
+
   .favorite-panel {
     display: none;
     background: var(--card);
