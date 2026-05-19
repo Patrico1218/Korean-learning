@@ -306,6 +306,32 @@
     color: var(--accent);
   }
 
+  .speak-btn {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(15,14,23,0.62);
+    color: var(--muted);
+    cursor: pointer;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 0.2s;
+  }
+
+  .speak-btn:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(255,217,61,0.12);
+  }
+
   .korean-char {
     font-family: 'Noto Serif KR', serif;
     font-size: 28px;
@@ -420,6 +446,14 @@
   }
 
   .quiz-favorite-btn.show {
+    display: inline-flex;
+  }
+
+  .quiz-speak-btn {
+    display: none;
+  }
+
+  .quiz-speak-btn.show {
     display: inline-flex;
   }
 
@@ -551,6 +585,14 @@
     width: 36px;
     height: 36px;
     font-size: 20px;
+  }
+
+  .speak-btn-large {
+    top: 12px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
   }
 
   .flashcard {

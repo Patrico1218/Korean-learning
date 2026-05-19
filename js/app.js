@@ -45,6 +45,37 @@ const labelMap = { vowel:'母音', plain:'平音', asp:'激音', hard:'硬音' }
 const favoriteStorageKey = 'korean-learning-favorites';
 let favorites = loadFavorites();
 
+function getKoreanExampleText(item) {
+  return (item.example || item.char).split(' ')[0];
+}
+
+function getFlashSpeakText(item) {
+  return item.romanize ? item.front : getKoreanExampleText(item);
+}
+
+function getQuizSpeakText() {
+  if (!currentQ) return '';
+  return quizMode === 'vocab' ? currentQ.korean : getKoreanExampleText(currentQ);
+}
+
+function speakKorean(text) {
+  if (!text || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ko-KR';
+  utterance.rate = 0.82;
+
+  const voices = window.speechSynthesis.getVoices();
+  const koreanVoice = voices.find(voice => voice.lang === 'ko-KR') ||
+    voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith('ko'));
+  if (koreanVoice) utterance.voice = koreanVoice;
+
+  window.speechSynthesis.speak(utterance);
+}
+
 function loadFavorites() {
   try {
     const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || '[]');
@@ -187,11 +218,16 @@ function buildGrid(arr, gridId) {
     const card = document.createElement('div');
     card.className = 'char-card';
     card.innerHTML = `
+      <button class="speak-btn" type="button" aria-label="播放發音">🔊</button>
       <button class="favorite-btn" type="button" data-favorite-id="${favoriteItem.id}" aria-label="加入收藏">♡</button>
       <span class="korean-char">${item.char}</span>
       <div class="char-hint">${item.hint || '點擊看發音'}</div>
       <div class="reveal">${item.reading}</div>
     `;
+    card.querySelector('.speak-btn').onclick = event => {
+      event.stopPropagation();
+      speakKorean(getKoreanExampleText(item));
+    };
     card.querySelector('.favorite-btn').onclick = event => {
       event.stopPropagation();
       toggleFavorite(favoriteItem);
@@ -373,6 +409,11 @@ function toggleCurrentFlashFavorite(event) {
   toggleFavorite(favoriteFromFlashItem(fcList[fcIndex]));
 }
 
+function speakCurrentFlashCard(event) {
+  event.stopPropagation();
+  speakKorean(getFlashSpeakText(fcList[fcIndex]));
+}
+
 function updateQuizFavoriteButton() {
   const btn = document.getElementById('quiz-favorite-btn');
   if (!btn) return;
@@ -393,6 +434,17 @@ function toggleCurrentQuizFavorite(event) {
   event.stopPropagation();
   if (quizMode !== 'vocab' || !currentQ) return;
   toggleFavorite(travelFavoriteItem(currentQ));
+}
+
+function updateQuizSpeakButton() {
+  const btn = document.getElementById('quiz-speak-btn');
+  if (!btn) return;
+  btn.classList.toggle('show', !!currentQ);
+}
+
+function speakCurrentQuizQuestion(event) {
+  event.stopPropagation();
+  speakKorean(getQuizSpeakText());
 }
 
 function fcNext() { fcIndex = (fcIndex + 1) % fcList.length; updateFlashcard(); }
@@ -464,6 +516,7 @@ function startQuiz() {
   document.getElementById('alpha-question').style.display = quizMode === 'alpha' ? 'block' : 'none';
   document.getElementById('vocab-question').style.display = quizMode === 'vocab' ? 'block' : 'none';
   updateQuizFavoriteButton();
+  updateQuizSpeakButton();
   nextQuestion();
 }
 
@@ -472,6 +525,7 @@ function nextQuestion() {
   answered = false;
   currentQ = quizQueue.shift();
   quizTotal++;
+  updateQuizSpeakButton();
 
   document.getElementById('quiz-feedback').textContent = '';
   document.getElementById('quiz-feedback').className = 'feedback';
