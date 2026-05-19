@@ -412,6 +412,15 @@
     border-radius: 20px;
     padding: 28px 24px;
     text-align: center;
+    position: relative;
+  }
+
+  .quiz-favorite-btn {
+    display: none;
+  }
+
+  .quiz-favorite-btn.show {
+    display: inline-flex;
   }
 
   .quiz-question {

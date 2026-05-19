@@ -80,6 +80,15 @@ function nounFavoriteItem(item) {
   };
 }
 
+function travelFavoriteItem(item) {
+  return {
+    id: `travel-${item.cat}-${item.korean}`,
+    char: item.korean,
+    title: item.meaning,
+    sub: `${item.catLabel} · ${item.romanize}`,
+  };
+}
+
 function favoriteFromFlashItem(item) {
   return item.romanize ? nounFavoriteItem(item) : alphaFavoriteItem(item);
 }
@@ -364,6 +373,28 @@ function toggleCurrentFlashFavorite(event) {
   toggleFavorite(favoriteFromFlashItem(fcList[fcIndex]));
 }
 
+function updateQuizFavoriteButton() {
+  const btn = document.getElementById('quiz-favorite-btn');
+  if (!btn) return;
+
+  if (quizMode !== 'vocab' || !currentQ) {
+    btn.classList.remove('show');
+    delete btn.dataset.favoriteId;
+    return;
+  }
+
+  const item = travelFavoriteItem(currentQ);
+  btn.dataset.favoriteId = item.id;
+  btn.classList.add('show');
+  syncFavoriteButtons();
+}
+
+function toggleCurrentQuizFavorite(event) {
+  event.stopPropagation();
+  if (quizMode !== 'vocab' || !currentQ) return;
+  toggleFavorite(travelFavoriteItem(currentQ));
+}
+
 function fcNext() { fcIndex = (fcIndex + 1) % fcList.length; updateFlashcard(); }
 function fcPrev() { fcIndex = (fcIndex - 1 + fcList.length) % fcList.length; updateFlashcard(); }
 function fcShuffle() {
@@ -432,6 +463,7 @@ function startQuiz() {
   document.getElementById('quiz-result').style.display = 'none';
   document.getElementById('alpha-question').style.display = quizMode === 'alpha' ? 'block' : 'none';
   document.getElementById('vocab-question').style.display = quizMode === 'vocab' ? 'block' : 'none';
+  updateQuizFavoriteButton();
   nextQuestion();
 }
 
@@ -446,6 +478,7 @@ function nextQuestion() {
   document.getElementById('next-btn').classList.remove('show');
 
   if (quizMode === 'alpha') {
+    updateQuizFavoriteButton();
     document.getElementById('quiz-char').textContent = currentQ.char;
     const others = shuffle(allChars.filter(c => c.char !== currentQ.char)).slice(0, 3);
     const options = shuffle([currentQ, ...others]);
@@ -477,6 +510,7 @@ function nextQuestion() {
       btn.onclick = () => checkVocabAnswer(btn, opt === currentQ.meaning);
       container.appendChild(btn);
     });
+    updateQuizFavoriteButton();
   }
 
   updateScoreDisplay();
